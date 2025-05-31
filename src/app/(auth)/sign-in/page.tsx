@@ -20,8 +20,7 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { signInFormSchema } from '@/lib/auth-schema'
-
-
+import { authClient } from '@/lib/auth-client'
 
 export default function SignIn() {
     const form = useForm<z.infer<typeof signInFormSchema>>({
@@ -32,7 +31,22 @@ export default function SignIn() {
         },
     })
 
-    function onSubmit(values: z.infer<typeof signInFormSchema>) {
+    async function onSubmit(values: z.infer<typeof signInFormSchema>) {
+        const { email, password } = values
+        const { data, error } = await authClient.signIn.email({
+            email,
+            password,
+            callbackURL: '/dashboard'
+        }, {
+            onRequest() {
+                toast("Event has been created.")
+            }, onSuccess() {
+                form.reset()
+            },
+            onError(context) {
+                alert(context.error.message)
+            }
+        });
         console.log(values)
     }
 

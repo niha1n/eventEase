@@ -20,19 +20,38 @@ import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { formSchema } from '@/lib/auth-schema'
+import { authClient } from '@/lib/auth-client'
 
-export default function SignIn() {
+export default function SignUp() {
+    const router = useRouter()
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
             name: "",
-
             email: "",
             password: "",
         },
     })
 
-    function onSubmit(values: z.infer<typeof formSchema>) {
+    async function onSubmit(values: z.infer<typeof formSchema>) {
+        const { name, email, password } = values
+        const { data, error } = await authClient.signUp.email({
+            email,
+            password,
+            name,
+        }, {
+            callbackUrl: "/sign-in",
+            onRequest() {
+                toast("Please Wait...")
+                toast.success("Account created! ")
+                router.push("/sign-in")
+            }, onSuccess() {
+                form.reset()
+            },
+            onError(context) {
+                alert(context.error.message)
+            }
+        });
         console.log(values)
     }
 
@@ -85,7 +104,7 @@ export default function SignIn() {
                                 </FormItem>
                             )}
                         />
-                        <Button className='w-full'  type="submit">Submit</Button>
+                        <Button className='w-full' type="submit">Submit</Button>
                     </form>
                 </Form>
             </CardContent>

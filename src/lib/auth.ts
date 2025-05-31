@@ -1,6 +1,12 @@
-import { prisma } from '@/db/client'
+import { betterAuth } from "better-auth";
+import { prismaAdapter } from "better-auth/adapters/prisma";
+import prisma from "./prisma";
 
-const user = await prisma.user.findUnique({
-  where: { email: 'nihal@example.com' },
-})
-console.log(user)
+export const auth = betterAuth({
+  database: prismaAdapter(prisma, {
+    provider: "postgresql",
+  }),
+  emailAndPassword: {
+    enabled: true,
+  },
+});

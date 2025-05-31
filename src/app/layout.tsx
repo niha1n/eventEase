@@ -2,9 +2,9 @@
 import '@/app/globals.css'
 import { Inter } from 'next/font/google'
 import { cn } from '@/lib/utils'
-import { Toaster } from 'sonner'
 import Navbar from '@/components/navbar'
 import Footer from '@/components/footer'
+import { Toaster } from '@/components/ui/sonner'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -31,6 +31,7 @@ export default function RootLayout({
           <Navbar />
             {children}
           </main>
+          <Toaster/>
           <Footer />
         </div>
       </body>
