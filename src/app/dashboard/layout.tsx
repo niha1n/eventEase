@@ -9,6 +9,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
+// Mark this layout as dynamic since it uses authentication
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
     title: "Dashboard | EventEase",
     description: "Manage your events and RSVPs",

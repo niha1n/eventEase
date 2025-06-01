@@ -16,11 +16,11 @@ import Link from "next/link";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Event, EventView, RSVP } from "@prisma/client";
 
-interface EventPageProps {
-    params: {
+type PageProps = {
+    params: Promise<{
         id: string;
-    };
-}
+    }>;
+};
 
 type EventWithRelations = Event & {
     _count: {
@@ -37,9 +37,10 @@ type EventWithRelations = Event & {
     }>;
 };
 
-export async function generateMetadata({ params }: EventPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+    const { id } = await params;
     const event = await prisma.event.findUnique({
-        where: { id: params.id },
+        where: { id: id },
         select: { title: true, description: true, isPublished: true },
     });
 
@@ -62,9 +63,10 @@ export async function generateMetadata({ params }: EventPageProps): Promise<Meta
     };
 }
 
-export default async function EventPage({ params }: EventPageProps) {
+export default async function EventPage({ params }: PageProps) {
+    const { id } = await params;
     const event = await prisma.event.findUnique({
-        where: { id: params.id },
+        where: { id: id },
         include: {
             _count: {
                 select: {

@@ -10,15 +10,19 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { Separator } from "@/components/ui/separator";
 
-interface ViewEventPageProps {
-    params: {
-        id: string;
-    };
-}
+// Mark this page as dynamic since it uses authentication
+export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: ViewEventPageProps) {
+type PageProps = {
+    params: Promise<{
+        id: string;
+    }>;
+};
+
+export async function generateMetadata({ params }: PageProps) {
+    const { id } = await params;
     const event = await prisma.event.findUnique({
-        where: { id: params.id },
+        where: { id: id },
         include: {
             _count: {
                 select: {
@@ -40,14 +44,15 @@ export async function generateMetadata({ params }: ViewEventPageProps) {
     };
 }
 
-export default async function ViewEventPage({ params }: ViewEventPageProps) {
+export default async function ViewEventPage({ params }: PageProps) {
+    const { id } = await params;
     const user = await getAuthenticatedUser();
     if (!user) {
         redirect("/login");
     }
 
     const event = await prisma.event.findUnique({
-        where: { id: params.id },
+        where: { id: id },
         include: {
             _count: {
                 select: { rsvps: true }
@@ -81,13 +86,13 @@ export default async function ViewEventPage({ params }: ViewEventPageProps) {
                     </div>
                     <div className="flex gap-2">
                         <Button asChild variant="outline" size="sm">
-                            <Link href={`/event/${params.id}`} target="_blank">
+                            <Link href={`/event/${id}`} target="_blank">
                                 <EyeIcon className="mr-2 h-4 w-4" />
                                 View Public Page
                             </Link>
                         </Button>
                         <Button asChild variant="outline" size="sm">
-                            <Link href={`/dashboard/events/${params.id}/edit`}>
+                            <Link href={`/dashboard/events/${id}/edit`}>
                                 <PencilIcon className="mr-2 h-4 w-4" />
                                 Edit Event
                             </Link>
@@ -154,7 +159,7 @@ export default async function ViewEventPage({ params }: ViewEventPageProps) {
                             <div className="text-sm font-medium text-muted-foreground">Event Link</div>
                             <div className="flex items-center gap-2">
                                 <code className="relative rounded bg-muted px-2 py-1 text-sm font-mono">
-                                    {`${process.env.NEXT_PUBLIC_APP_URL}/event/${event.id}`}
+                                    {`${process.env.NEXT_PUBLIC_APP_URL}/event/${id}`}
                                 </code>
                                 <Button variant="ghost" size="icon" className="h-8 w-8">
                                     <LinkIcon className="h-4 w-4" />
@@ -184,7 +189,7 @@ export default async function ViewEventPage({ params }: ViewEventPageProps) {
                                     RSVP management coming soon...
                                 </p>
                                 <Button variant="outline" size="sm" className="mt-4" asChild>
-                                    <Link href={`/dashboard/events/${params.id}/attendees`}>
+                                    <Link href={`/dashboard/events/${id}/attendees`}>
                                         View Attendees
                                     </Link>
                                 </Button>
@@ -193,7 +198,7 @@ export default async function ViewEventPage({ params }: ViewEventPageProps) {
                     </CardContent>
                     <CardFooter className="border-t bg-muted/50">
                         <Button variant="ghost" size="sm" className="w-full" asChild>
-                            <Link href={`/dashboard/events/${params.id}/attendees`}>
+                            <Link href={`/dashboard/events/${id}/attendees`}>
                                 Manage Attendees
                             </Link>
                         </Button>
@@ -204,13 +209,13 @@ export default async function ViewEventPage({ params }: ViewEventPageProps) {
             {/* Quick Actions */}
             <div className="flex gap-2 justify-end">
                 <Button variant="outline" size="sm" asChild>
-                    <Link href={`/dashboard/events/${params.id}/edit`}>
+                    <Link href={`/dashboard/events/${id}/edit`}>
                         <PencilIcon className="mr-2 h-4 w-4" />
                         Edit Event
                     </Link>
                 </Button>
                 <Button variant="outline" size="sm" asChild>
-                    <Link href={`/event/${params.id}`} target="_blank">
+                    <Link href={`/event/${id}`} target="_blank">
                         <Share2Icon className="mr-2 h-4 w-4" />
                         Share Event
                     </Link>

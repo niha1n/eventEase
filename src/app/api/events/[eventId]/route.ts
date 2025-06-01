@@ -2,17 +2,20 @@ import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUser } from "@/lib/auth-server";
 import prisma from "@/lib/prisma";
 
-export async function GET(
-  request: NextRequest,
-  context: { params: { eventId: string } }
-) {
+type Context = {
+  params: Promise<{
+    eventId: string;
+  }>;
+};
+
+export async function GET(request: NextRequest, context: Context) {
   try {
     const user = await getAuthenticatedUser();
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { eventId } = context.params;
+    const { eventId } = await context.params;
     const event = await prisma.event.findUnique({
       where: { id: eventId },
       include: {
@@ -53,17 +56,14 @@ export async function GET(
   }
 }
 
-export async function PATCH(
-  request: NextRequest,
-  context: { params: { eventId: string } }
-) {
+export async function PATCH(request: NextRequest, context: Context) {
   try {
     const user = await getAuthenticatedUser();
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { eventId } = context.params;
+    const { eventId } = await context.params;
     const body = await request.json();
     const { isPublished } = body;
 
@@ -90,17 +90,14 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
-  request: NextRequest,
-  context: { params: { eventId: string } }
-) {
+export async function DELETE(request: NextRequest, context: Context) {
   try {
     const user = await getAuthenticatedUser();
     if (!user) {
       return new NextResponse("Unauthorized", { status: 401 });
     }
 
-    const { eventId } = context.params;
+    const { eventId } = await context.params;
     const event = await prisma.event.findUnique({
       where: { id: eventId },
       select: { userId: true },

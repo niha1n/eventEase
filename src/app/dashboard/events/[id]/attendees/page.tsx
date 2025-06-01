@@ -9,14 +9,17 @@ import { ArrowLeftIcon, UsersIcon, MailIcon, CalendarIcon, PhoneIcon } from "luc
 import Link from "next/link";
 import { Separator } from "@/components/ui/separator";
 
-interface AttendeesPageProps {
-    params: {
-        id: string;
-    };
-}
+// Mark this page as dynamic since it uses authentication
+export const dynamic = 'force-dynamic';
 
-export async function generateMetadata({ params }: AttendeesPageProps) {
-    const { id } = params;
+type PageProps = {
+    params: Promise<{
+        id: string;
+    }>;
+};
+
+export async function generateMetadata({ params }: PageProps) {
+    const { id } = await params;
 
     const event = await prisma.event.findUnique({
         where: { id },
@@ -35,8 +38,8 @@ export async function generateMetadata({ params }: AttendeesPageProps) {
     };
 }
 
-export default async function AttendeesPage({ params }: AttendeesPageProps) {
-    const { id } = params;
+export default async function AttendeesPage({ params }: PageProps) {
+    const { id } = await params;
 
     const user = await getAuthenticatedUser();
     if (!user) {

@@ -5,18 +5,19 @@ import prisma from "@/lib/prisma";
 import { z } from "zod";
 import { eventSchema, customFieldSchema } from "@/lib/validators";
 
-interface EditEventPageProps {
-    params: {
+type PageProps = {
+    params: Promise<{
         id: string;
-    };
-}
+    }>;
+};
 
 type EventFormData = z.infer<typeof eventSchema>;
 type CustomField = z.infer<typeof customFieldSchema>;
 
-export async function generateMetadata({ params }: EditEventPageProps) {
+export async function generateMetadata({ params }: PageProps) {
+    const { id } = await params;
     const event = await prisma.event.findUnique({
-        where: { id: params.id },
+        where: { id },
     });
 
     if (!event) {
@@ -31,15 +32,16 @@ export async function generateMetadata({ params }: EditEventPageProps) {
     };
 }
 
-export default async function EditEventPage({ params }: EditEventPageProps) {
+export default async function EditEventPage({ params }: PageProps) {
+    const { id } = await params;
     try {
-        await requireEventOwnership(params.id);
+        await requireEventOwnership(id);
     } catch (error) {
         redirect("/sign-in");
     }
 
     const event = await prisma.event.findUnique({
-        where: { id: params.id },
+        where: { id },
     });
 
     if (!event) {
