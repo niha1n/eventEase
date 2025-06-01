@@ -1,13 +1,10 @@
 import '@/app/globals.css'
-import { Inter } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { Toaster } from 'sonner'
 import Link from 'next/link'
 import { Calendar } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { AppFooter } from '@/components/layout/app-footer'
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata = {
     title: 'EventEase',
@@ -20,7 +17,7 @@ export default function AuthLayout({
     children: React.ReactNode
 }) {
     return (
-        <div className={cn("min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted", inter.variable)}>
+        <div className={cn("min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted")}>
             {/* Top Navigation */}
             <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
                 <div className="container mx-auto px-4 sm:px-6 lg:px-8">

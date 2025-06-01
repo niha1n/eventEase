@@ -1,11 +1,8 @@
 // app/layout.tsx
 import '@/app/globals.css'
-import { Inter } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { Toaster } from '@/components/ui/sonner'
 import { AppFooter } from '@/components/layout/app-footer'
-
-const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata = {
   title: 'EventEase',
@@ -19,7 +16,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      <body className={cn('min-h-screen flex flex-col bg-background font-sans antialiased', inter.variable)}>
+      <body className={cn('min-h-screen flex flex-col bg-background font-sans antialiased')}>
         <div className="flex-1 flex flex-col">
           {children}
         </div>
