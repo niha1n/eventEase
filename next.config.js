@@ -1,8 +1,8 @@
-// @ts-check
- 
+// next.config.js
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  /* config options here */
-}
- 
-module.exports = nextConfig
+  reactStrictMode: true,
+  // add any other settings here
+};
+
+module.exports = nextConfig;
