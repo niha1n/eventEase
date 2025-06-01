@@ -74,15 +74,43 @@ export default function EventCard({ event }: EventCardProps) {
     const [isLoading, setIsLoading] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
     const [isToggling, setIsToggling] = useState(false);
+    const [isCopying, setIsCopying] = useState(false);
 
     // Convert dates once at the start
     const startDate = event.startDate instanceof Date ? event.startDate : new Date(event.startDate);
     const endDate = event.endDate ? (event.endDate instanceof Date ? event.endDate : new Date(event.endDate)) : null;
 
-    const handleCopyLink = () => {
-        const url = `${window.location.origin}/event/${event.id}`;
-        navigator.clipboard.writeText(url);
-        toast.success("Event link copied to clipboard");
+    const handleCopyLink = async () => {
+        try {
+            setIsCopying(true);
+            // Get the base URL from environment variables
+            const baseUrl = process.env.NEXT_PUBLIC_APP_URL || window.location.origin;
+            const url = `${baseUrl}/event/${event.id}`;
+
+            // Try to use the modern clipboard API first
+            if (navigator.clipboard && window.isSecureContext) {
+                await navigator.clipboard.writeText(url);
+            } else {
+                // Fallback for older browsers or non-secure contexts
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                textArea.style.top = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                document.execCommand('copy');
+                textArea.remove();
+            }
+
+            toast.success("Event link copied to clipboard");
+        } catch (error) {
+            console.error('Failed to copy link:', error);
+            toast.error("Failed to copy event link");
+        } finally {
+            setIsCopying(false);
+        }
     };
 
     const handleDelete = async () => {
@@ -160,9 +188,12 @@ export default function EventCard({ event }: EventCardProps) {
                                         View Public Page
                                     </Link>
                                 </DropdownMenuItem>
-                                <DropdownMenuItem onClick={handleCopyLink}>
-                                    <Share2 className="mr-2 h-4 w-4" />
-                                    Copy Event Link
+                                <DropdownMenuItem
+                                    onClick={handleCopyLink}
+                                    disabled={isCopying}
+                                >
+                                    <Share2 className={cn("mr-2 h-4 w-4", isCopying && "animate-spin")} />
+                                    {isCopying ? "Copying..." : "Copy Event Link"}
                                 </DropdownMenuItem>
                                 <DropdownMenuItem onClick={handleTogglePublish} disabled={isToggling}>
                                     {event.isPublished ? (

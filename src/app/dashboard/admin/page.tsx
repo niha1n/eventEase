@@ -9,6 +9,7 @@ import { requireRole } from "@/lib/auth-server";
 import { Skeleton } from "@/components/ui/skeleton";
 import { AuditLogs } from "./audit-logs";
 import { Button } from "@/components/ui/button";
+import { AnimatedAdminCard, AnimatedAdminHeader, AnimatedAdminSection } from "@/components/ui/animated";
 
 interface User {
     id: string;
@@ -70,12 +71,14 @@ export default function AdminDashboard() {
 
     if (error) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-[50vh]">
-                <h2 className="text-xl font-semibold mb-2">Error</h2>
-                <p className="text-muted-foreground mb-4">{error}</p>
-                <Button onClick={loadUsers}>
-                    Try Again
-                </Button>
+            <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)]">
+                <AnimatedAdminCard className="text-center space-y-4 max-w-md">
+                    <h2 className="text-xl font-semibold mb-2">Error</h2>
+                    <p className="text-muted-foreground mb-4">{error}</p>
+                    <Button onClick={loadUsers}>
+                        Try Again
+                    </Button>
+                </AnimatedAdminCard>
             </div>
         );
     }
@@ -83,12 +86,12 @@ export default function AdminDashboard() {
     if (isLoading) {
         return (
             <div className="space-y-8">
-                <div>
+                <AnimatedAdminHeader>
                     <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
                     <p className="text-muted-foreground">
                         Manage users and system settings
                     </p>
-                </div>
+                </AnimatedAdminHeader>
                 <div className="grid gap-6">
                     <Card>
                         <CardHeader>
@@ -127,49 +130,55 @@ export default function AdminDashboard() {
 
     return (
         <div className="space-y-8">
-            <div>
+            <AnimatedAdminHeader>
                 <h1 className="text-3xl font-bold tracking-tight">Admin Dashboard</h1>
                 <p className="text-muted-foreground">
                     Manage users and system settings
                 </p>
-            </div>
+            </AnimatedAdminHeader>
 
             <div className="grid gap-6">
-                <Card>
-                    <CardHeader>
-                        <CardTitle>System Overview</CardTitle>
-                        <CardDescription>
-                            Key metrics and system status
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                            <div className="p-4 border rounded-lg">
-                                <h3 className="text-sm font-medium">Total Users</h3>
-                                <p className="text-2xl font-bold mt-2">{users.length}</p>
+                <AnimatedAdminSection index={0}>
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>System Overview</CardTitle>
+                            <CardDescription>
+                                Key metrics and system status
+                            </CardDescription>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                                <AnimatedAdminCard index={0} className="p-4 border rounded-lg">
+                                    <h3 className="text-sm font-medium">Total Users</h3>
+                                    <p className="text-2xl font-bold mt-2">{users.length}</p>
+                                </AnimatedAdminCard>
+                                <AnimatedAdminCard index={1} className="p-4 border rounded-lg">
+                                    <h3 className="text-sm font-medium">Administrators</h3>
+                                    <p className="text-2xl font-bold mt-2">
+                                        {users.filter(u => u.role === Role.ADMIN).length}
+                                    </p>
+                                </AnimatedAdminCard>
+                                <AnimatedAdminCard index={2} className="p-4 border rounded-lg">
+                                    <h3 className="text-sm font-medium">Staff Members</h3>
+                                    <p className="text-2xl font-bold mt-2">
+                                        {users.filter(u => u.role === Role.STAFF).length}
+                                    </p>
+                                </AnimatedAdminCard>
                             </div>
-                            <div className="p-4 border rounded-lg">
-                                <h3 className="text-sm font-medium">Administrators</h3>
-                                <p className="text-2xl font-bold mt-2">
-                                    {users.filter(u => u.role === Role.ADMIN).length}
-                                </p>
-                            </div>
-                            <div className="p-4 border rounded-lg">
-                                <h3 className="text-sm font-medium">Staff Members</h3>
-                                <p className="text-2xl font-bold mt-2">
-                                    {users.filter(u => u.role === Role.STAFF).length}
-                                </p>
-                            </div>
-                        </div>
-                    </CardContent>
-                </Card>
+                        </CardContent>
+                    </Card>
+                </AnimatedAdminSection>
 
-                {(() => {
-                    console.log('[AdminDashboard] Rendering UserManagement with users:', users);
-                    return <UserManagement initialUsers={users} onUserUpdate={handleUserUpdate} />;
-                })()}
+                <AnimatedAdminSection index={1}>
+                    {(() => {
+                        console.log('[AdminDashboard] Rendering UserManagement with users:', users);
+                        return <UserManagement initialUsers={users} onUserUpdate={handleUserUpdate} />;
+                    })()}
+                </AnimatedAdminSection>
 
-                <AuditLogs />
+                <AnimatedAdminSection index={2}>
+                    <AuditLogs />
+                </AnimatedAdminSection>
             </div>
         </div>
     );

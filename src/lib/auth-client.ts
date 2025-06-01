@@ -1,6 +1,8 @@
 import { createAuthClient } from "better-auth/react";
 import { Role } from "@prisma/client";
 
+const baseURL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
 // Define the sign-up parameters type
 type SignUpParams = {
   email: string;
@@ -17,8 +19,13 @@ type SignUpOptions = {
 };
 
 export const authClient = createAuthClient({
-  /** The base URL of the server (optional if you're using the same domain) */
-  baseURL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+  baseURL,
+  endpoints: {
+    signUp: "/api/auth/[...all]",
+    signIn: "/api/auth/sign-in",
+    signOut: "/api/auth/sign-out",
+    session: "/api/auth/session",
+  },
   signUp: {
     email: async (params: SignUpParams, options?: SignUpOptions) => {
       try {
@@ -26,6 +33,7 @@ export const authClient = createAuthClient({
           email: params.email,
           name: params.name,
           hasCallbackURL: !!params.callbackURL,
+          baseURL,
         });
 
         options?.onRequest?.();
@@ -36,7 +44,7 @@ export const authClient = createAuthClient({
           password: "[REDACTED]",
         });
 
-        const response = await fetch("/api/auth/[...all]", {
+        const response = await fetch(`${baseURL}/api/auth/[...all]`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -45,17 +53,34 @@ export const authClient = createAuthClient({
             ...signUpData,
             action: "sign-up",
           }),
+        }).catch((fetchError) => {
+          console.error("[Client] Network error during fetch:", fetchError);
+          throw new Error(
+            "Network error: Unable to reach the server. Please check your internet connection and try again."
+          );
         });
 
         console.log("[Client] Received response:", {
           status: response.status,
           ok: response.ok,
+          statusText: response.statusText,
         });
 
         if (!response.ok) {
-          const error = await response.json();
-          console.error("[Client] Sign-up failed:", error);
-          const errorMessage = error.message || "Failed to sign up";
+          let errorMessage = "Failed to sign up";
+          try {
+            const error = await response.json();
+            console.error("[Client] Sign-up failed:", error);
+            errorMessage = error.message || errorMessage;
+          } catch (parseError) {
+            console.error(
+              "[Client] Failed to parse error response:",
+              parseError
+            );
+            errorMessage = `Server error (${response.status}): ${
+              response.statusText || "Unknown error"
+            }`;
+          }
           options?.onError?.({ error: new Error(errorMessage) });
           return { error: { message: errorMessage } };
         }
@@ -80,23 +105,15 @@ export const authClient = createAuthClient({
   },
   signIn: {
     email: async (
-      params: {
-        email: string;
-        password: string;
-        callbackURL?: string;
-      },
-      options?: {
-        onRequest?(): void;
-        onSuccess?(): void;
-        onError?(context: { error: Error }): void;
-      }
+      params: { email: string; password: string; callbackURL?: string },
+      options?: SignUpOptions
     ) => {
       try {
         options?.onRequest?.();
 
         const { callbackURL, ...signInData } = params;
 
-        const response = await fetch("/api/auth/sign-in", {
+        const response = await fetch(`${baseURL}/api/auth/sign-in`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",

@@ -60,10 +60,7 @@ export default function AuthLayout({
                 </div>
             </main>
 
-            {/* Footer */}
-            <AppFooter />
-
-            <Toaster />
+            {/* <Toaster /> */}
         </div>
     )
 }

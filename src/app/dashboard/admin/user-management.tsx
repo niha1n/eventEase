@@ -6,6 +6,7 @@ import { Role } from "@prisma/client";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { AnimatedAdminCard } from "@/components/ui/animated";
 import {
     Table,
     TableBody,
@@ -113,144 +114,150 @@ export function UserManagement({ initialUsers, onUserUpdate }: UserManagementPro
 
     if (!users || users.length === 0) {
         return (
-            <Card>
-                <CardHeader>
-                    <CardTitle>User Management</CardTitle>
-                    <CardDescription>
-                        No users found. Please check your permissions or try refreshing the page.
-                    </CardDescription>
-                </CardHeader>
-            </Card>
+            <AnimatedAdminCard>
+                <Card>
+                    <CardHeader>
+                        <CardTitle>User Management</CardTitle>
+                        <CardDescription>
+                            No users found. Please check your permissions or try refreshing the page.
+                        </CardDescription>
+                    </CardHeader>
+                </Card>
+            </AnimatedAdminCard>
         );
     }
 
     return (
-        <Card>
-            <CardHeader>
-                <CardTitle>User Management</CardTitle>
-                <CardDescription>
-                    Manage user roles and permissions
-                </CardDescription>
-            </CardHeader>
-            <CardContent>
-                <Table>
-                    <TableHeader>
-                        <TableRow>
-                            <TableHead>User</TableHead>
-                            <TableHead>Role</TableHead>
-                            <TableHead>Events</TableHead>
-                            <TableHead>Joined</TableHead>
-                            <TableHead className="w-[50px]"></TableHead>
-                        </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                        {users.map((user) => (
-                            <TableRow key={user.id}>
-                                <TableCell>
-                                    <div className="flex flex-col">
-                                        <span className="font-medium">
-                                            {user.name || "Unnamed User"}
-                                        </span>
-                                        <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                            <MailIcon className="h-3 w-3" />
-                                            <span>{user.email}</span>
-                                        </div>
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <Badge
-                                        variant="outline"
-                                        className={cn(
-                                            "border-transparent",
-                                            user.role === Role.ADMIN && "bg-red-500/10 text-red-500",
-                                            user.role === Role.STAFF && "bg-blue-500/10 text-blue-500",
-                                            user.role === Role.EVENT_OWNER && "bg-green-500/10 text-green-500"
-                                        )}
-                                    >
-                                        {user.role.replace("_", " ")}
-                                    </Badge>
-                                </TableCell>
-                                <TableCell>{user._count.events}</TableCell>
-                                <TableCell>
-                                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                                        <CalendarIcon className="h-3 w-3" />
-                                        {format(new Date(user.createdAt), "MMM d, yyyy")}
-                                    </div>
-                                </TableCell>
-                                <TableCell>
-                                    <DropdownMenu>
-                                        <DropdownMenuTrigger asChild>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                disabled={isLoading}
-                                                className="h-8 w-8"
-                                            >
-                                                <MoreVerticalIcon className="h-4 w-4" />
-                                                <span className="sr-only">Open menu</span>
-                                            </Button>
-                                        </DropdownMenuTrigger>
-                                        <DropdownMenuContent align="end">
-                                            <DropdownMenuItem
-                                                onClick={() => handleRoleChange(user)}
-                                                disabled={isLoading}
-                                            >
-                                                <ShieldIcon className="mr-2 h-4 w-4" />
-                                                Change Role
-                                            </DropdownMenuItem>
-                                        </DropdownMenuContent>
-                                    </DropdownMenu>
-                                </TableCell>
+        <AnimatedAdminCard>
+            <Card>
+                <CardHeader>
+                    <CardTitle>User Management</CardTitle>
+                    <CardDescription>
+                        Manage user roles and permissions
+                    </CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>User</TableHead>
+                                <TableHead>Role</TableHead>
+                                <TableHead>Events</TableHead>
+                                <TableHead>Joined</TableHead>
+                                <TableHead className="w-[50px]"></TableHead>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                        </TableHeader>
+                        <TableBody>
+                            {users.map((user, index) => (
+                                <AnimatedAdminCard key={user.id} index={index}>
+                                    <TableRow>
+                                        <TableCell>
+                                            <div className="flex flex-col">
+                                                <span className="font-medium">
+                                                    {user.name || "Unnamed User"}
+                                                </span>
+                                                <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                    <MailIcon className="h-3 w-3" />
+                                                    <span>{user.email}</span>
+                                                </div>
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Badge
+                                                variant="outline"
+                                                className={cn(
+                                                    "border-transparent",
+                                                    user.role === Role.ADMIN && "bg-red-500/10 text-red-500",
+                                                    user.role === Role.STAFF && "bg-blue-500/10 text-blue-500",
+                                                    user.role === Role.EVENT_OWNER && "bg-green-500/10 text-green-500"
+                                                )}
+                                            >
+                                                {user.role.replace("_", " ")}
+                                            </Badge>
+                                        </TableCell>
+                                        <TableCell>{user._count.events}</TableCell>
+                                        <TableCell>
+                                            <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                                                <CalendarIcon className="h-3 w-3" />
+                                                {format(new Date(user.createdAt), "MMM d, yyyy")}
+                                            </div>
+                                        </TableCell>
+                                        <TableCell>
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="icon"
+                                                        disabled={isLoading}
+                                                        className="h-8 w-8"
+                                                    >
+                                                        <MoreVerticalIcon className="h-4 w-4" />
+                                                        <span className="sr-only">Open menu</span>
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end">
+                                                    <DropdownMenuItem
+                                                        onClick={() => handleRoleChange(user)}
+                                                        disabled={isLoading}
+                                                    >
+                                                        <ShieldIcon className="mr-2 h-4 w-4" />
+                                                        Change Role
+                                                    </DropdownMenuItem>
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
+                                        </TableCell>
+                                    </TableRow>
+                                </AnimatedAdminCard>
+                            ))}
+                        </TableBody>
+                    </Table>
 
-                {/* Role Change Dialog */}
-                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogContent>
-                        <DialogHeader>
-                            <DialogTitle>Change User Role</DialogTitle>
-                            <DialogDescription>
-                                Update the role for {selectedUser?.name || selectedUser?.email}
-                            </DialogDescription>
-                        </DialogHeader>
-                        <div className="grid gap-4 py-4">
-                            <div className="grid gap-2">
-                                <Label htmlFor="role">Role</Label>
-                                <Select
-                                    value={newRole || undefined}
-                                    onValueChange={(value) => setNewRole(value as Role)}
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Select a role" />
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value={Role.ADMIN}>Administrator</SelectItem>
-                                        <SelectItem value={Role.STAFF}>Staff Member</SelectItem>
-                                        <SelectItem value={Role.EVENT_OWNER}>Event Owner</SelectItem>
-                                    </SelectContent>
-                                </Select>
+                    {/* Role Change Dialog */}
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                        <DialogContent>
+                            <DialogHeader>
+                                <DialogTitle>Change User Role</DialogTitle>
+                                <DialogDescription>
+                                    Update the role for {selectedUser?.name || selectedUser?.email}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="grid gap-4 py-4">
+                                <div className="grid gap-2">
+                                    <Label htmlFor="role">Role</Label>
+                                    <Select
+                                        value={newRole || undefined}
+                                        onValueChange={(value) => setNewRole(value as Role)}
+                                    >
+                                        <SelectTrigger>
+                                            <SelectValue placeholder="Select a role" />
+                                        </SelectTrigger>
+                                        <SelectContent>
+                                            <SelectItem value={Role.ADMIN}>Administrator</SelectItem>
+                                            <SelectItem value={Role.STAFF}>Staff Member</SelectItem>
+                                            <SelectItem value={Role.EVENT_OWNER}>Event Owner</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
                             </div>
-                        </div>
-                        <DialogFooter>
-                            <Button
-                                variant="outline"
-                                onClick={() => setIsDialogOpen(false)}
-                                disabled={isLoading}
-                            >
-                                Cancel
-                            </Button>
-                            <Button
-                                onClick={() => selectedUser && newRole && updateUserRole(selectedUser.id, newRole)}
-                                disabled={isLoading || !newRole || !selectedUser || newRole === selectedUser.role}
-                            >
-                                {isLoading ? "Updating..." : "Update Role"}
-                            </Button>
-                        </DialogFooter>
-                    </DialogContent>
-                </Dialog>
-            </CardContent>
-        </Card>
+                            <DialogFooter>
+                                <Button
+                                    variant="outline"
+                                    onClick={() => setIsDialogOpen(false)}
+                                    disabled={isLoading}
+                                >
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={() => selectedUser && newRole && updateUserRole(selectedUser.id, newRole)}
+                                    disabled={isLoading || !newRole || !selectedUser || newRole === selectedUser.role}
+                                >
+                                    {isLoading ? "Updating..." : "Update Role"}
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+                </CardContent>
+            </Card>
+        </AnimatedAdminCard>
     );
 } 

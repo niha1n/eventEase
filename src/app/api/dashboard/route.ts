@@ -21,6 +21,18 @@ export async function GET() {
     const userId = user.user.id;
     const now = new Date();
 
+    // Get user with role
+    const userWithRole = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        role: true,
+      },
+    });
+
+    if (!userWithRole) {
+      return new NextResponse("User not found", { status: 404 });
+    }
+
     // Get all user's events with necessary data
     const userEvents = await prisma.event.findMany({
       where: {
@@ -208,6 +220,7 @@ export async function GET() {
     const activeEvents = categorizedEvents.ongoing.length;
 
     return NextResponse.json({
+      userWithRole,
       recentEvents,
       upcomingEvents,
       categorizedEvents,

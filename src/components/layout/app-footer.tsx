@@ -8,11 +8,11 @@ export function AppFooter() {
                 <div className="flex h-12 items-center justify-between">
                     <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span>Developed by</span>
-                        <span className="font-medium text-foreground">Your Name</span>
+                        <span className="font-medium text-foreground">Nihal N</span>
                     </div>
                     <div className="flex items-center gap-4">
                         <Link
-                            href="https://github.com/yourusername"
+                            href="https://github.com/niha1n"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-muted-foreground hover:text-foreground transition-colors"
@@ -21,7 +21,7 @@ export function AppFooter() {
                             <span className="sr-only">GitHub</span>
                         </Link>
                         <Link
-                            href="https://linkedin.com/in/yourusername"
+                            href="https://linkedin.com/in/n-nihal"
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-muted-foreground hover:text-foreground transition-colors"
