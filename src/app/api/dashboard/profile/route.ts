@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { z } from "zod";
 import prisma from "@/lib/prisma";
@@ -9,7 +9,7 @@ const updateProfileSchema = z.object({
 });
 
 // GET /api/dashboard/profile
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // Get the current user's session
     const session = await auth.api.getSession({
@@ -50,7 +50,7 @@ export async function GET() {
 }
 
 // PUT /api/dashboard/profile
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
   try {
     // Get the current user's session
     const session = await auth.api.getSession({

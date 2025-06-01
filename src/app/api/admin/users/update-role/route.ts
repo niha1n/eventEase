@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { Role } from "@prisma/client";
 import { z } from "zod";
@@ -10,7 +10,7 @@ const updateRoleSchema = z.object({
   role: z.nativeEnum(Role),
 });
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     // Get the current user's session
     const session = await auth.api.getSession({

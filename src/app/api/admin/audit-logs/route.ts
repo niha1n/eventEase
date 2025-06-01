@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { Role } from "@prisma/client";
 import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     // Get the current user's session
     const session = await auth.api.getSession({
