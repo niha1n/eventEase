@@ -3,6 +3,9 @@ import { Inter } from 'next/font/google'
 import { cn } from '@/lib/utils'
 import { Toaster } from 'sonner'
 import Link from 'next/link'
+import { Calendar } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { AppFooter } from '@/components/layout/app-footer'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -11,39 +14,56 @@ export const metadata = {
     description: 'Effortless event management with powerful tools.',
 }
 
-export default function Layout({
+export default function AuthLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
     return (
-        <html lang="en" className="scroll-smooth">
-            <body
-                className={cn(
-                    'h-screen bg-background font-sans antialiased',
-                    inter.variable
-                )}
-            >
-                {/* Sonner toast provider */}
-                <Toaster richColors position="top-right" closeButton />
-
-                <div className="flex min-h-screen flex-col items-center justify-center">
-                    {/* Logo/Brand */}
-                    <Link href="/" className="mb-8">
-                        <h1 className="text-2xl font-bold">EventEase</h1>
-                    </Link>
-
-                    {/* Auth Container */}
-                    <div className="w-full max-w-md space-y-8 rounded-lg bg-card p-8 ">
-                        {children}
+        <div className={cn("min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted", inter.variable)}>
+            {/* Top Navigation */}
+            <nav className="sticky top-0 z-50 border-b bg-background/80 backdrop-blur-sm">
+                <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="flex h-16 items-center justify-between">
+                        <Link href="/" className="flex items-center gap-2">
+                            <Calendar className="h-6 w-6 text-primary" />
+                            <span className="text-xl font-bold">EventEase</span>
+                        </Link>
+                        <div className="flex items-center gap-3">
+                            <Button
+                                variant="ghost"
+                                size="sm"
+                                asChild
+                                className="text-muted-foreground hover:text-foreground"
+                            >
+                                <Link href="/sign-in">
+                                    Login
+                                </Link>
+                            </Button>
+                            <Button
+                                size="sm"
+                                asChild
+                            >
+                                <Link href="/sign-up">
+                                    Sign up
+                                </Link>
+                            </Button>
+                        </div>
                     </div>
-
-                    {/* Footer */}
-                    <footer className="mt-8 text-center text-sm text-muted-foreground">
-                        © {new Date().getFullYear()} EventEase
-                    </footer>
                 </div>
-            </body>
-        </html>
+            </nav>
+
+            {/* Main Content */}
+            <main className="flex-1 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+                <div className="w-full max-w-[400px]">
+                    {children}
+                </div>
+            </main>
+
+            {/* Footer */}
+            <AppFooter />
+
+            <Toaster />
+        </div>
     )
 }

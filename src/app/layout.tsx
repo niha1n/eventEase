@@ -2,9 +2,8 @@
 import '@/app/globals.css'
 import { Inter } from 'next/font/google'
 import { cn } from '@/lib/utils'
-import Navbar from '@/components/navbar'
-import Footer from '@/components/footer'
 import { Toaster } from '@/components/ui/sonner'
+import { AppFooter } from '@/components/layout/app-footer'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -19,21 +18,13 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" className="scroll-smooth">
-      <body className={`h-screen bg-background font-sans antialiased ${inter.variable}`}>
-
-        {/* Sonner toast provider */}
-        <Toaster richColors position="top-right" closeButton />
-
-        <div className="flex flex-col min-h-screen">
-          {/* <Navbar /> */}
-          <main className="flex-1 container mx-auto px-4 py-6">
-          <Navbar />
-            {children}
-          </main>
-          <Toaster/>
-          <Footer />
+    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <body className={cn('min-h-screen flex flex-col bg-background font-sans antialiased', inter.variable)}>
+        <div className="flex-1 flex flex-col">
+          {children}
         </div>
+        <AppFooter />
+        <Toaster richColors position="top-right" closeButton />
       </body>
     </html>
   )
